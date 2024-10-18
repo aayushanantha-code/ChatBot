@@ -1,207 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Walter.AI</title>
     <style>
-        body {
-            font-family: "Courier New", Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            color: #f4f4f4;
-            background-color: #1b1b1b;
-            animation: bgColorChange 10s infinite;
-        }
-        
-        .logo-container img {
-            max-width: 100%;
-            max-height: 150px;
-            width: auto;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-        
-        .chat-container {
-            width: 450px;
-            background-color: #3e3e3e;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-            position: relative;
-            margin-bottom: 40px;
-            /* Adds space between chatbox and footer */
-        }
-        
-        .avatar-container {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            overflow: hidden;
-            margin: 0 auto 20px auto;
-            animation: float 3s ease-in-out infinite;
-            border: 3px solid #57ff57;
-            box-shadow: 0 0 10px rgba(87, 255, 87, 0.5);
-        }
-        
-        .avatar-container img {
-            width: 100%;
-            height: auto;
-            border-radius: 50%;
-        }
-        
-        @keyframes float {
-            0% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-            100% {
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes bgColorChange {
-            0% {
-                background-color: #1b1b1b;
-            }
-            50% {
-                background-color: #2e2e2e;
-            }
-            100% {
-                background-color: #1b1b1b;
-            }
-        }
-        
-        .chat-box {
-            height: 300px;
-            overflow-y: auto;
-            border: 1px solid #444;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            background-color: #252525;
-            color: #bfbfbf;
-            font-size: 14px;
-        }
-        
-        .user-input {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border: 1px solid #444;
-            background-color: #2b2b2b;
-            color: #f4f4f4;
-        }
-        
-        .send-btn {
-            padding: 10px 20px;
-            background-color: #57ff57;
-            color: #1b1b1b;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            transition: transform 0.3s ease-in-out;
-        }
-        
-        .send-btn:hover {
-            animation: pulse 1s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-        /* Footer styles */
-        
-        footer {
-            background-color: #222;
-            /* Darker than body for subtle separation */
-            padding: 25px 0;
-            text-align: center;
-            color: #dcdcdc;
-            font-size: 14px;
-            width: 100%;
-        }
-        
-        .footer-credits {
-            margin-top: 15px;
-            font-size: 12px;
-            color: #999;
-        }
-        
-        .footer-credits a {
-            color: #57ff57;
-            text-decoration: none;
-        }
-        
-        .footer-credits a:hover {
-            text-decoration: underline;
-        }
-        /* Scrollbar customization */
-        
-         ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-         ::-webkit-scrollbar-track {
-            background: #333;
-        }
-        
-         ::-webkit-scrollbar-thumb {
-            background: #57ff57;
-            border-radius: 5px;
-        }
-        
-         ::-webkit-scrollbar-thumb:hover {
-            background: #4edb4e;
-        }
-    </style>
-</head>
+      body {
+        font-family: "Courier New", Courier, monospace;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        color: #f4f4f4;
+        background-color: #1b1b1b;
+        animation: bgColorChange 10s infinite;
+      }
 
-<body>
+      .logo-container img {
+        max-width: 100%;
+        max-height: 150px;
+        width: auto;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+      }
+
+      .chat-container {
+        width: 450px;
+        background-color: #3e3e3e;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        position: relative;
+        margin-bottom: 40px;
+        /* Adds space between chatbox and footer */
+      }
+
+      .avatar-container {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto 20px auto;
+        animation: float 3s ease-in-out infinite;
+        border: 3px solid #57ff57;
+        box-shadow: 0 0 10px rgba(87, 255, 87, 0.5);
+      }
+
+      .avatar-container img {
+        width: 100%;
+        height: auto;
+        border-radius: 50%;
+      }
+      /* API Key Input Styling */
+
+      #api-key-input {
+        width: calc(100% - 22px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #444;
+        background-color: #2b2b2b;
+        color: #f4f4f4;
+      }
+      /* API Key Button Styling */
+
+      #test-api-key {
+        padding: 10px 20px;
+        background-color: #57ff57;
+        color: #1b1b1b;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 14px;
+        transition: transform 0.3s ease-in-out;
+        margin-bottom: 20px;
+      }
+
+      #test-api-key:hover {
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes bgColorChange {
+        0% {
+          background-color: #1b1b1b;
+        }
+        50% {
+          background-color: #2e2e2e;
+        }
+        100% {
+          background-color: #1b1b1b;
+        }
+      }
+
+      .chat-box {
+        height: 300px;
+        overflow-y: auto;
+        border: 1px solid #444;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background-color: #252525;
+        color: #bfbfbf;
+        font-size: 14px;
+      }
+
+      .user-input {
+        width: calc(100% - 22px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #444;
+        background-color: #2b2b2b;
+        color: #f4f4f4;
+      }
+
+      .send-btn {
+        padding: 10px 20px;
+        background-color: #57ff57;
+        color: #1b1b1b;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 14px;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .send-btn:hover {
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      /* Footer styles */
+
+      footer {
+        background-color: #222;
+        /* Darker than body for subtle separation */
+        padding: 25px 0;
+        text-align: center;
+        color: #dcdcdc;
+        font-size: 14px;
+        width: 100%;
+      }
+
+      .footer-credits {
+        margin-top: 15px;
+        font-size: 12px;
+        color: #999;
+      }
+
+      .footer-credits a {
+        color: #57ff57;
+        text-decoration: none;
+      }
+
+      .footer-credits a:hover {
+        text-decoration: underline;
+      }
+      /* Scrollbar customization */
+
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #333;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #57ff57;
+        border-radius: 5px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #4edb4e;
+      }
+    </style>
+  </head>
+
+  <body>
     <!-- Image Placeholder for Walter.AI Logo -->
     <div class="logo-container">
-        <img src="img/walter_ai_logo.png" alt="Walter.AI Logo" />
+      <img src="img/walter_ai_logo.png" alt="Walter.AI Logo" />
     </div>
 
     <div class="chat-container">
-        <div class="avatar-container">
-            <img src="img/walter_ai.png" alt="Walter White Avatar" />
-        </div>
-        <div class="chat-box" id="chatBox"></div>
-        <input type="text" id="userInput" class="user-input" placeholder="Speak, Yo..." />
-        <button class="send-btn" onclick="sendMessage()">Send</button>
+      <!-- API Key Input -->
+      <input
+        type="password"
+        id="api-key-input"
+        placeholder="Enter your OpenAI API key"
+      />
+      <button id="test-api-key">Test API Key</button>
+      <div class="avatar-container">
+        <img src="img/walter_ai.png" alt="Walter White Avatar" />
+      </div>
+      <div class="chat-box" id="chatBox"></div>
+      <input
+        type="text"
+        id="userInput"
+        class="user-input"
+        placeholder="Speak, Yo..."
+      />
+      <button class="send-btn" onclick="sendMessage()">Send</button>
     </div>
 
     <!-- Footer -->
     <footer>
-        <div class="footer-credits">
-            <p>
-                &copy; 2024 Aayush Anantha, Brian H Lee, Matthew Edward Cox, Renee Dhar.
-                <a href="#">Authors of This Project</a>.
-            </p>
-        </div>
+      <div class="footer-credits">
+        <p>
+          &copy; 2024 Aayush Anantha, Brian H Lee, Matthew Edward Cox, Renee
+          Dhar.
+          <a href="#">Authors of This Project</a>.
+        </p>
+      </div>
     </footer>
 
     <script src="script.js"></script>
-</body>
-
+  </body>
 </html>
