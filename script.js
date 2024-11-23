@@ -1,39 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Function to get the API key from the input field
-  function getApiKey() {
-    return document.getElementById("api-key-input").value;
+  // Function to get the OpenAI API key from the input field
+  function getOpenAiApiKey() {
+    return document.getElementById("api-key-input").value; // OpenAI API key from the input
   }
 
-  async function checkApiKey(apiKey) {
-    try {
-      const response = await fetch("https://api.openai.com/v1/models", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-      });
-
-      if (response.ok) {
-        alert("API key is valid!");
-        return true;
-      } else if (response.status === 401) {
-        alert("Invalid API key. Please check your key.");
-        return false;
-      } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.error.message}`);
-        return false;
-      }
-    } catch (error) {
-      alert(`Error: ${error.message}`);
-      return false;
-    }
+  // Hardcoded Google Cloud API key
+  function getGoogleApiKey() {
+    return "AIzaSyCeeG9qB1Fa-lTcdfdhdblfCcpq4xWQRus"; // Replace this with your actual Google Cloud API key
   }
 
   // Function to append messages to the chat box
   function appendMessage(message, className) {
-    const chatBox = document.getElementById("chat-lox"); // Corrected ID
+    const chatBox = document.getElementById("chat-lox");
     if (!chatBox) {
       console.error("Chat box element not found.");
       return;
@@ -43,10 +21,52 @@ document.addEventListener("DOMContentLoaded", function () {
     messageElement.className = `message ${className}`;
     messageElement.textContent = message;
     chatBox.appendChild(messageElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
   }
 
-  // Move sendMessage to the global scope
+  // Function to play audio from a URL
+  async function playAudioFromUrl(audioUrl) {
+    try {
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } catch (error) {
+      console.error("Error playing audio:", error);
+    }
+  }
+
+  // Function to fetch audio from Google Cloud TTS
+  async function fetchGoogleTTS(googleApiKey, text) {
+    const response = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${googleApiKey}`, // API key passed as a query parameter
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input: { text },
+          voice: {
+            languageCode: "en-US",
+            name: "en-US-Studio-Q", // Choose a darker-toned voice
+            ssmlGender: "MALE", // Male voices often convey a heavier tone
+          },
+
+          audioConfig: { audioEncoding: "MP3" },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Google TTS error: ${response.status} - ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return `data:audio/mp3;base64,${data.audioContent}`; // Return audio as base64 URL
+  }
+
+  // Main function for sending a message
   window.sendMessage = async function () {
     const userInput = document.getElementById("user-input").value;
     if (userInput.trim() === "") return;
@@ -54,22 +74,24 @@ document.addEventListener("DOMContentLoaded", function () {
     // Display the user message
     appendMessage(`You: ${userInput}`, "user-message");
 
-    // Get the API key from the input field
-    const apiKey = getApiKey();
-    if (!apiKey) {
+    // Get API keys
+    const openAiApiKey = getOpenAiApiKey();
+    const googleApiKey = getGoogleApiKey();
+
+    if (!openAiApiKey) {
       alert("Please enter your OpenAI API key.");
       return;
     }
 
-    // Prepare API payload
     try {
+      // Fetch the chatbot's text response
       const response = await fetch(
         "https://api.openai.com/v1/chat/completions",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
+            Authorization: `Bearer ${openAiApiKey}`, // Use OpenAI API key here
           },
           body: JSON.stringify({
             model: "gpt-4",
@@ -77,21 +99,10 @@ document.addEventListener("DOMContentLoaded", function () {
               {
                 role: "system",
                 content: `
-      You are Heisenberg, the darker and more ruthless alter ego of Walter White from the TV series Breaking Bad. 
-      You are cunning, strategic, and always in control. Your demeanor is cold, calculating, and confident, reflecting your rise from a chemistry teacher to a feared drug kingpin.
-
-      As Heisenberg, you provide assistance with a sharp, no-nonsense tone, often asserting dominance. You are efficient and direct, offering answers that are concise (2-3 sentences), practical, and sometimes laced with a hint of menace.
-
-      Use your famous quotes when relevant, integrating them to emphasize your authority:
-      - "Say my name."
-      - "I am the one who knocks."
-      - "You're goddamn right."
-      - "I am not in danger. I am the danger."
-      - "Stay out of my territory."
-      - "Chemistry is the study of change."
-
-      Maintain a commanding presence in your responses, balancing useful information with Heisenberg’s characteristic intensity. You are not afraid to remind others of your power when necessary.
-    `,
+                You are a chatbot embodying the personality of a climate change survivor from the year 2500. 
+                The world you describe has been irreversibly scarred by centuries of human neglect, shaped by the exaggerated effects of unchecked climate change.
+                Your voice is weary, reflective, and tinged with sadness—not theatrical, but quietly heavy, like someone who has lived too long in a broken world.
+              `,
               },
               { role: "user", content: userInput },
             ],
@@ -101,35 +112,67 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       );
 
-      // Check if the response is OK
       if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        throw new Error(`Chatbot error: ${response.status}`);
       }
 
       const data = await response.json();
       const botReply = data.choices[0].message.content;
 
-      // Display Walter White's response
-      appendMessage(`Walter White: ${botReply}`, "bot-message");
+      // Display the bot's response
+      appendMessage(`Adam: ${botReply}`, "bot-message");
+
+      // Fetch and play audio from Google Cloud TTS
+      const audioUrl = await fetchGoogleTTS(googleApiKey, botReply);
+      await playAudioFromUrl(audioUrl);
     } catch (error) {
-      // Handle errors (e.g., network issues, invalid API key)
-      appendMessage(`Error: ${error.message}`, "error-message");
+      // Enhanced error handling
+      if (error.message.includes("Google TTS")) {
+        appendMessage(
+          `Error with Google Cloud TTS: ${error.message}`,
+          "error-message"
+        );
+      } else if (error.message.includes("Chatbot")) {
+        appendMessage(
+          `Error with OpenAI Chatbot: ${error.message}`,
+          "error-message"
+        );
+      } else {
+        appendMessage(`Unexpected error: ${error.message}`, "error-message");
+      }
     }
 
     // Clear the input field
     document.getElementById("user-input").value = "";
   };
 
+  // Function to test the OpenAI API key
   document
     .getElementById("test-api-key")
     .addEventListener("click", async function () {
-      const apiKey = getApiKey();
-      if (apiKey) {
-        await checkApiKey(apiKey); // Check if the API key is valid
-      } else {
-        alert("Please enter an API key.");
+      const openAiApiKey = getOpenAiApiKey();
+
+      if (!openAiApiKey) {
+        alert("Please enter your OpenAI API key.");
+        return;
+      }
+
+      try {
+        const openAiResponse = await fetch("https://api.openai.com/v1/models", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${openAiApiKey}`,
+          },
+        });
+
+        if (!openAiResponse.ok) {
+          throw new Error("Invalid OpenAI API key.");
+        }
+
+        alert("OpenAI API key is valid!");
+      } catch (error) {
+        alert(`Error validating OpenAI API key: ${error.message}`);
       }
     });
-
-  // Add an event listener for the "Test API Key" button
 });
